@@ -24,10 +24,10 @@ Cmls_tunerAudioProcessorEditor::Cmls_tunerAudioProcessorEditor (Cmls_tunerAudioP
     getLookAndFeel().setColour(Slider::thumbColourId, Colours::white);
     getLookAndFeel().setColour(Slider::trackColourId, Colours::darkorange);
     getLookAndFeel().setColour(Slider::backgroundColourId, Colours::darkgrey);
-    numOfHarmonics.setRange(1.0,8.0,1);
+    numOfHarmonics.setRange(1.0,12.0,1);
     numOfHarmonics.setPopupMenuEnabled(true);
-    numOfHarmonics.setValue(0.0);
-    numOfHarmonics.setTextBoxStyle(Slider::TextBoxLeft, false, 20, numOfHarmonics.getTextBoxHeight());
+    numOfHarmonics.setValue(1.0);
+    numOfHarmonics.setTextBoxStyle(Slider::TextBoxLeft, false, 30, numOfHarmonics.getTextBoxHeight());
     addAndMakeVisible(numOfHarmonics);
 
     numOfHarmonicsLabel.setText("Number of Harmonics", dontSendNotification);
@@ -61,20 +61,25 @@ void Cmls_tunerAudioProcessorEditor::timerCallback()
     
     // checking if the sound is over so to calculate the most frequently
     // appeared midi note during the sound
-    if (processor.soundIsOver == true && fft.newMidiNotes.size() > 0 )
+    if (processor.soundIsOver == true && fft.vectorFrequencies.size() > 0 )
     {
         // find the most frequent midi note in the vector
-        processor.newMidiNote =  FindMode(fft.newMidiNotes);
+        float fundFreq =  FindMode(fft.vectorFrequencies);
+        int midiNote;
+        midiNote = roundToInt(log(fundFreq/440.0)/log(2) * 12 + 69);
+        processor.newMidiNote = midiNote > 0 && midiNote < 129 ? midiNote : 0;
+        
+        fft.freqToPrint = fundFreq;
+        fft.noteToPrint = fft.freqToNote(fundFreq);
     
         // emptying the vector
-        fft.newMidiNotes.clear();
-        std::cout << "emptying vector....size now: " << fft.newMidiNotes.size() << std::endl;
-        std::cout << "new pitch detected!____ " << processor.newMidiNote << std::endl;
+        fft.vectorFrequencies.clear();
+
     }
     
 }
 
-int Cmls_tunerAudioProcessorEditor::FindMode(std::vector<int>& midiNotes)
+int Cmls_tunerAudioProcessorEditor::FindMode(std::vector<float>& midiNotes)
 {
     int index = 0;
     int highest = 0;
@@ -101,20 +106,18 @@ int Cmls_tunerAudioProcessorEditor::FindMode(std::vector<int>& midiNotes)
 void Cmls_tunerAudioProcessorEditor::paint(Graphics& g)
 {
     Image background = ImageCache::getFromMemory(BinaryData::blackwallsurfacebackground_232148067232_jpg, BinaryData::blackwallsurfacebackground_232148067232_jpgSize);
-    //g.drawImageAt(background, 0, 0);
+    g.drawImageAt(background, 0, 0);
 
     texts.title(g);
     texts.subtitle(g);
    
     g.setOpacity (1.0f);
-    //g.setColour (Colours::white);
     fft.paint(g);
 
     Rectangle<int> area = getLocalBounds();
     Rectangle<int> areaDown = area.removeFromBottom(120);
     ColourGradient myGradient(Colours::transparentBlack, 0, (5 / 8) * 420 , Colours::darkslategrey, 500, 420, false);
     g.setGradientFill(myGradient);
-    //g.setColour(Colours::darkslategrey);
     g.fillRect(areaDown);
 
     
@@ -133,7 +136,7 @@ void Cmls_tunerAudioProcessorEditor::paint(Graphics& g)
     texts.textfreq(g);
 
     noteLabel.setText(fft.noteToPrint, dontSendNotification);
-    freqLabel.setText(std::to_string(fft.freqToPrint) + " Hz", dontSendNotification);
+    freqLabel.setText(std::to_string(int(round(fft.freqToPrint))) + " Hz", dontSendNotification);
     Font aFont("Agency FB", "regular", 20.0f);
     noteLabel.setFont(aFont);
     noteLabel.setColour(Label::textColourId, Colours::black);
@@ -144,19 +147,19 @@ void Cmls_tunerAudioProcessorEditor::paint(Graphics& g)
 }
 
 
+
+
 void Cmls_tunerAudioProcessorEditor::resized()
 {
     Rectangle<int> area = getLocalBounds();
     Rectangle<int> areaTop = area.removeFromTop(300);
-    //Rectangle<int> areaDown = area.removeFromBottom(120);
   
     fft.setBounds(areaTop);
-    //numOfHarmonics.setBoundsRelative(0.1f, 0.775f, 0.25f, 0.25f);
-    numOfHarmonics.setBounds(10, 350, 240, 50);
 
+    numOfHarmonics.setBounds(10, 350, 240, 50);
     noteLabel.setBounds(280, 310, 100, 100);
     freqLabel.setBounds(390, 310, 100, 100);
-
+    fft.harmonics = numOfHarmonics.getValue();
 }
 
 

@@ -17,8 +17,8 @@ FFT::FFT(Cmls_tunerAudioProcessor& p) : processor (p) , m_forwardFFT(processor.f
 {
     setOpaque (true);
     startTimerHz (60);
-
-
+    noteToPrint = "-";
+    freqToPrint = 0.0f;
 }
 
 FFT::~FFT()
@@ -40,15 +40,11 @@ void FFT::paint (Graphics& g)
     g.setOpacity (1.0f);
     ColourGradient myGradient(Colours::brown, 0, (5 / 8) * 420-50, Colours::orange, 0, (5 / 8)* 420, false);
     g.setGradientFill(myGradient);
-    //g.setColour (Colours::orange);
     drawFrame (g);
 }
 
 void FFT::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
 }
 
 void FFT::drawNextFrameOfSpectrum()
@@ -110,13 +106,9 @@ void FFT::pitchDetection()
 {
     
     float maxBin = 0.0f;
-    int midiNote = 0;
-    //processor.newMidiNote = 0;
-    
+    float fundFreq = 0.0f;
     
     static const int frequencies = processor.fftSize/2;
-    //std::cout << "frequencies: " << frequencies << std::endl;
-    //std::cout << "processor.fftSize * 2: " << processor.fftSize*2 << std::endl;
     
     float frequenciesArray [frequencies];
     zeromem (frequenciesArray, sizeof (frequenciesArray));
@@ -139,50 +131,30 @@ void FFT::pitchDetection()
     }
     maxBin = std::distance(HarmonicSum, std::max_element(HarmonicSum, HarmonicSum + frequencies));
 
-    
-    if (HarmonicSum[(int)maxBin] > 1 )
+    // We select only sounds that have magnitude at least 1 -- dB > 0
+    if (HarmonicSum[(int)maxBin] > 1 && maxBin > 0)
     {
-        //There is incoming sound
+        //There is incoming sound, setting the flag to false
         processor.soundIsOver = false;
         
-        if (newMidiNotes.size()>0)
-        {
-           std::cout << "Vector had " << newMidiNotes.size() << " elements" << fundFreq << std::endl;
-        }
-        else
-        {
-            std::cout << "Vector had no data " << newMidiNotes.size() << " elements" << fundFreq << std::endl;
-        }
-            
         
         fundFreq = (processor.getSampleRate()/2) * (maxBin/frequencies);
-        midiNote = roundToInt(log(fundFreq/440.0)/log(2) * 12 + 69);
-        midiNote = midiNote > 0 && midiNote < 129 ? midiNote : 0;
         
         // add the detected pitch as  MIDI note into the vector
-        newMidiNotes.push_back(midiNote);
+        vectorFrequencies.push_back(fundFreq);
         
+        // update the real time pitch detection variables
         noteToPrint = freqToNote(fundFreq);
         freqToPrint = fundFreq;
 
-        std::cout << "maxBin[" << maxBin << "]: " << fundFreq << std::endl;
-        std::cout << "midiNote : " << midiNote << std::endl;
-        std::cout << "Note : " << freqToNote(fundFreq) << std::endl;
-       
-        fundFreq = 0.0f;
+        // reset fund freq
+        
     }
     
-    if (HarmonicSum[(int)maxBin] < 1 && newMidiNotes.size()>0)
+    if (HarmonicSum[(int)maxBin] < 1 && vectorFrequencies.size()>0)
     {
         // We have received a zero so we are considering the sound is over
-        std::cout << "we have received a zero so we are considering the sound is over " <<  maxBin <<  std::endl;
         processor.soundIsOver = true;
-        
-        //processor.newMidiNote = 0;
-        //std::cout << "maxBin == 0  processor.soundIsOver to  true: " <<  processor.soundIsOver << std::endl;
     }
-        
-    //std::cout << " End of pitchdetection() , soundIsOver: " <<  processor.soundIsOver  << std::endl ;
-    
 }
 

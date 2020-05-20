@@ -8,12 +8,18 @@
       <FILE id="rv8WsB" name="FFT.h" compile="0" resource="0" file="Source/FFT.h"/>
       <FILE id="EcY841" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
+      <FILE id="lbZq8m" name="GraphicComponents.cpp" compile="1" resource="0"
+            file="Source/GraphicComponents.cpp"/>
+      <FILE id="vwWN2Z" name="GraphicComponents.h" compile="0" resource="0"
+            file="Source/GraphicComponents.h"/>
       <FILE id="O8znwh" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
       <FILE id="k9LWdd" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="VcSV81" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <FILE id="CeRns0" name="black-wall-surface-background_23-2148067232.jpg"
+          compile="0" resource="1" file="Source/black-wall-surface-background_23-2148067232.jpg"/>
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">

@@ -72,15 +72,10 @@ public:
     bool soundIsOver=true;
     
 private:
-    
     // FFT Variables
     float m_fifo [fftSize];                
     int m_fifoIndex = 0 ;
     void pushNextSampleIntoFifo (float sample) noexcept;
-    
-    
-    //MIDI Variables
-    double startTime;   
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Cmls_tunerAudioProcessor)

@@ -35,8 +35,9 @@ public:
     {
         scopeSize = 512
     };
-    int FindMode(std::vector<int>& midiNotes);
+    int FindMode(std::vector<float>& midiNotes);
     void sliderValueChanged(Slider* slider) override;
+
     
 private:
     Cmls_tunerAudioProcessor& processor;

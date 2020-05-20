@@ -29,11 +29,12 @@ public:
     void drawFrame (Graphics& g);
     
     //
-    std::vector<int> newMidiNotes;
+    std::vector<float> vectorFrequencies;
     int harmonics;
-    float fundFreq = 0.0f;
-    std::string noteToPrint;
-    float freqToPrint;
+    std::string noteToPrint = {"-"};
+    float freqToPrint = 0.0f;
+    float midiToFreq(int& note);
+    std::string freqToNote(float& freq);
     
 private:
     enum
@@ -47,12 +48,9 @@ private:
     dsp::WindowingFunction<float> m_window;
     
     //the timer callback function is calling the drawNextFrameOfSpectrum()
-    //only when the next FFT block is ready AND
-    //resets the nextFFTBlockReady flag and updates the GUI using the repaint() function
+    //only when the next FFT block is ready AND resets the nextFFTBlockReady flag and updates the GUI using the repaint() function
     void timerCallback() override;
     void pitchDetection();
-    float midiToFreq(int& note);
-    std::string freqToNote(float& freq);
     const std::string noteName[12] =  {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     
     
