@@ -1,4 +1,4 @@
-# CMLS 
+# CMLS_Tuner
 CMLS  Homework 2 , Group 2, Assignment 3 - Guitar Tuner by students:
 - 10577360 
 - 10650559 
