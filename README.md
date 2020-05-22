@@ -12,7 +12,7 @@ The requirements for compiling and building the code:
 
 The VST audio plugin code consists of 4 .h and 4 .cpp files and an image used as spectrogram background:
 -  The PluginProcessor.cpp and .h files that handles the audio input buffer, the midi output messages and the processing logic.
-- The PluginEditor.cpp and .h files that handles the onscreen GUI controls and the visual- ization.
+- The PluginEditor.cpp and .h files that handles the onscreen GUI controls and the visualization.
 - The FFT.cpp and .h files that computes the FFT for every block of input samples, draws the spectrogram frames and detects the fundamental frequency based on the FFT data.
 - The GraphicComponents.cpp and .h files that handles the steady text messages, i.e. title, subtitle and slider label, and the variable ones as the displayed Note estimated and its equivalent Frequency.
 - black-wall-surface-background_23-2148067232.jpg
